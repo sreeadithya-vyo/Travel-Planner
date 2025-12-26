@@ -1,17 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { TripItinerary, UserPreferences, DayPlan, Activity } from "../types";
 
-// Helper to safely get the API key without crashing in browser if process is undefined
-const getAiClient = () => {
-  // Safe check for process.env to prevent "ReferenceError: process is not defined"
-  const apiKey = (typeof process !== "undefined" && process.env) ? process.env.API_KEY : "";
-  
-  if (!apiKey) {
-    console.warn("API Key is missing. Ensure process.env.API_KEY is configured.");
-  }
-  
-  return new GoogleGenAI({ apiKey: apiKey || "dummy_key_to_prevent_init_crash" });
-};
+// Initialize Gemini Client
+// Vite will replace process.env.API_KEY with the actual string during build
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
  * Clean raw JSON string from Markdown code blocks if present
@@ -70,7 +62,6 @@ export const generateTripItinerary = async (prefs: UserPreferences): Promise<Tri
   `;
 
   try {
-    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
