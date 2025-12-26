@@ -1,0 +1,5 @@
+{
+  "name": "WanderPlan AI",
+  "description": "An intelligent travel planner that generates personalized itineraries with Google Maps integration, budget estimation, and route optimization.",
+  "requestFramePermissions": []
+}
