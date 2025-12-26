@@ -1,8 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { TripItinerary, UserPreferences, DayPlan, Activity } from "../types";
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to safely get the API key without crashing in browser if process is undefined
+const getAiClient = () => {
+  let apiKey = "";
+  try {
+    apiKey = process.env.API_KEY || "";
+  } catch (e) {
+    console.warn("process.env is not accessible. Ensure API_KEY is injected during build.");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 /**
  * Clean raw JSON string from Markdown code blocks if present
@@ -61,6 +69,7 @@ export const generateTripItinerary = async (prefs: UserPreferences): Promise<Tri
   `;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: modelId,
       contents: prompt,
