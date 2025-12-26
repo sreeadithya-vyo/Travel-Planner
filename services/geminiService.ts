@@ -3,13 +3,14 @@ import { TripItinerary, UserPreferences, DayPlan, Activity } from "../types";
 
 // Helper to safely get the API key without crashing in browser if process is undefined
 const getAiClient = () => {
-  let apiKey = "";
-  try {
-    apiKey = process.env.API_KEY || "";
-  } catch (e) {
-    console.warn("process.env is not accessible. Ensure API_KEY is injected during build.");
+  // Safe check for process.env to prevent "ReferenceError: process is not defined"
+  const apiKey = (typeof process !== "undefined" && process.env) ? process.env.API_KEY : "";
+  
+  if (!apiKey) {
+    console.warn("API Key is missing. Ensure process.env.API_KEY is configured.");
   }
-  return new GoogleGenAI({ apiKey });
+  
+  return new GoogleGenAI({ apiKey: apiKey || "dummy_key_to_prevent_init_crash" });
 };
 
 /**
